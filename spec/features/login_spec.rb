@@ -36,27 +36,30 @@ describe 'login to REDTRAIL CRM', js: true do
      fill_in 'crm_contact_individual[add_spouse][business][company_name]', with: Faker::Company.name
 
      #------------------------address------------------------
+     #debugger
+     while true do
+       #find(:css, '#crm_contact_individual_addresses_attributes_0_address_type').all(:css, 'option').sample.select_option
+       #find('select[id^="country-select-"]').all('option').sample.select_option
+       find('select[id^="state-select-"]').all('option').sample.select_option
+     end
 
-       find(:css, '#crm_contact_individual_addresses_attributes_0_address_type').all(:css, 'option').sample.select_option
-       #find(:css, '#country-select-b99a928be4').all(:css, 'option').sample.select_option
-
-       fill_in 'crm_contact_individual[addresses_attributes][0][secondary_address]', with: Faker::Address.street_name
-       fill_in 'crm_contact_individual[addresses_attributes][0][city]', with: Faker::Address.secondary_address
-       fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Address.city
+       #fill_in 'crm_contact_individual[addresses_attributes][0][secondary_address]', with: Faker::Address.street_name
+       #fill_in 'crm_contact_individual[addresses_attributes][0][city]', with: Faker::Address.secondary_address
+       #fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Address.city
        #find(:css, '#state-select-7ccf233ba5').all(:css, 'option')[1 + rand(19)].select_option
-       fill_in 'crm_contact_individual[addresses_attributes][0][zip]', with: Faker::Address.postcode
+       #fill_in 'crm_contact_individual[addresses_attributes][0][zip]', with: Faker::Address.postcode
 
        #------------------------phones ------------------------
 
-     find(:css, '#crm_contact_individual_phones_attributes_0_phone_type').all(:css, 'option')[1 + rand(7)].select_option
-       fill_in 'crm_contact_individual[phones_attributes][0][number]', with: Faker::PhoneNumber.cell_phone
-       fill_in 'crm_contact_individual[phones_attributes][0][extension]', with: Faker::PhoneNumber.extension
-       fill_in 'crm_contact_individual[phones_attributes][0][speed_dial]', with: Faker::PhoneNumber.country_code
+     #find(:css, '#crm_contact_individual_phones_attributes_0_phone_type').all(:css, 'option')[1 + rand(7)].select_option
+     #  fill_in 'crm_contact_individual[phones_attributes][0][number]', with: Faker::PhoneNumber.cell_phone
+     #  fill_in 'crm_contact_individual[phones_attributes][0][extension]', with: Faker::PhoneNumber.extension
+     #  fill_in 'crm_contact_individual[phones_attributes][0][speed_dial]', with: Faker::PhoneNumber.country_code
 
        #------------------------emails------------------------
-     while true do
-       find(:css, '#crm_contact_individual_emails_attributes_0_email_type').all(:css, 'option')[1 + rand(3)].select_option
-       fill_in 'crm_contact_individual[emails_attributes][0][address]', with: Faker::Internet.email
-     end
+     #while true do
+     #  find(:css, '#crm_contact_individual_emails_attributes_0_email_type').all(:css, 'option')[1 + rand(3)].select_option
+     #  fill_in 'crm_contact_individual[emails_attributes][0][address]', with: Faker::Internet.email
+     #end
   end
 end
