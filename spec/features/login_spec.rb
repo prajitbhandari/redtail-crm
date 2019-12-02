@@ -28,16 +28,20 @@ end
 
 def is_valid_individual?
    @test_option = find(:css, '#crm_contact_individual_salutation_id').all(:css, 'option').sample
-   @test_option.select_option
-   @contact_text = @test_option.text()
-   fill_in 'crm_contact_individual[first_name]', with: Faker::Name.first_name
-   fill_in 'crm_contact_individual[middle_name]', with: Faker::Name.middle_name
-   fill_in 'crm_contact_individual[last_name]', with: Faker::Name.last_name
-   find(:css, '#crm_contact_individual_suffix').all(:css, 'option').sample.select_option
-   fill_in 'crm_contact_individual[nickname]', with: Faker::Name.initials
-   fill_in 'crm_contact_individual[designation]', with: Faker::Job.position
-   fill_in 'crm_contact_individual[job_title]', with: Faker::Job.title
-   fill_in 'crm_contact_individual[business_attributes][company_name]', with: Faker::Company.name
+   if @test_option.text == ""
+      is_valid_individual?
+   else
+      @test_option.select_option
+      @individual_text = @test_option.text
+      fill_in 'crm_contact_individual[first_name]', with: Faker::Name.first_name
+      fill_in 'crm_contact_individual[middle_name]', with: Faker::Name.middle_name
+      fill_in 'crm_contact_individual[last_name]', with: Faker::Name.last_name
+      find(:css, '#crm_contact_individual_suffix').all(:css, 'option').sample.select_option
+      fill_in 'crm_contact_individual[nickname]', with: Faker::Name.initials
+      fill_in 'crm_contact_individual[designation]', with: Faker::Job.position
+      fill_in 'crm_contact_individual[job_title]', with: Faker::Job.title
+      fill_in 'crm_contact_individual[business_attributes][company_name]', with: Faker::Company.name
+   end
 end
 
 def is_valid_family?
@@ -46,8 +50,8 @@ end
 
 def is_valid_spouse?
    @spouse_option = find(:css, '#crm_contact_individual_add_spouse_salutation_id').all(:css, 'option').sample
-   @spouse_text = @spouse_option.text()
-   if @contact_text == "Father" && @spouse_text == "Sister"
+   @spouse_text = @spouse_option.text
+   if @individual_text == "Father" && @spouse_text == "Sister"
       is_valid_spouse?
    else
       @spouse_option.select_option
@@ -68,26 +72,40 @@ def is_valid_spouse?
 end
 
 def is_valid_address?
-   find(:css, '#crm_contact_individual_addresses_attributes_0_address_type').all(:css, 'option').sample.select_option
-   find('select[id^="country-select-"]').all('option').sample.select_option
-   fill_in 'crm_contact_individual[addresses_attributes][0][street_address]', with: Faker::Address.street_name
-   fill_in 'crm_contact_individual[addresses_attributes][0][secondary_address]', with: Faker::Address.secondary_address
-   fill_in 'crm_contact_individual[addresses_attributes][0][city]', with: Faker::Address.street_name
-   fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Address.city
-   find('select[id^="state-select-"]').all('option').sample.select_option
-   fill_in 'crm_contact_individual[addresses_attributes][0][zip]', with: Faker::Address.postcode
+   @address_option = find(:css, '#crm_contact_individual_addresses_attributes_0_address_type').all(:css, 'option').sample
+   if @address_option.text == ""
+      is_valid_address?
+   else
+      @address_option.select_option
+      find('select[id^="country-select-"]').all('option').sample.select_option
+      fill_in 'crm_contact_individual[addresses_attributes][0][street_address]', with: Faker::Address.street_name
+      fill_in 'crm_contact_individual[addresses_attributes][0][secondary_address]', with: Faker::Address.secondary_address
+      fill_in 'crm_contact_individual[addresses_attributes][0][city]', with: Faker::Address.street_name
+      fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Address.city
+      find('select[id^="state-select-"]').all('option').sample.select_option
+      fill_in 'crm_contact_individual[addresses_attributes][0][zip]', with: Faker::Address.postcode
+   end
 end
 
 def is_valid_phone?
-   find(:css, '#crm_contact_individual_phones_attributes_0_phone_type').all(:css, 'option').sample.select_option
-   fill_in 'crm_contact_individual[phones_attributes][0][number]', with: Faker::PhoneNumber.cell_phone
-   fill_in 'crm_contact_individual[phones_attributes][0][extension]', with: Faker::PhoneNumber.extension
-   fill_in 'crm_contact_individual[phones_attributes][0][speed_dial]', with: Faker::PhoneNumber.country_code
+   @phone_option = find(:css, '#crm_contact_individual_phones_attributes_0_phone_type').all(:css, 'option').sample
+   if @phone_option.text == "Please select"
+      is_valid_phone?
+   else
+      @phone_option.select_option
+      fill_in 'crm_contact_individual[phones_attributes][0][number]', with: Faker::PhoneNumber.cell_phone
+      fill_in 'crm_contact_individual[phones_attributes][0][extension]', with: Faker::PhoneNumber.extension
+      fill_in 'crm_contact_individual[phones_attributes][0][speed_dial]', with: Faker::PhoneNumber.country_code
+   end
 end
 
 def is_valid_email?
-    find(:css, '#crm_contact_individual_emails_attributes_0_email_type').all(:css, 'option').sample.select_option
-    fill_in 'crm_contact_individual[emails_attributes][0][address]', with: Faker::Internet.email
+   @email_option = find(:css, '#crm_contact_individual_emails_attributes_0_email_type').all(:css, 'option').sample
+   if @phone_option.text == ""
+   else
+      @phone_option.select_option
+      fill_in 'crm_contact_individual[emails_attributes][0][address]', with: Faker::Internet.email
+   end
 end
 
 
