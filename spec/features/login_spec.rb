@@ -4,13 +4,20 @@ describe 'login to REDTRAIL CRM', js: true do
 
   it 'with valid dummy inputs' do
     is_logged_in?
-    is_valid_individual?
+    gender = ["male", "female"].sample
+    @gents = ["Dr.","Dr. & Mr.", "Mr.", "Mr. & Mrs.", "Father", "Judge", "Maj.", "Pastor", "Pfc.", "Prof.", "Rev.", "Sgt."]
+    @ladies = ["Dr. & Mrs.", "Drs.", "Miss", "Mrs.", "Ms.", "Judge", "Maj.", "Pastor", "Pfc.", "Prof.", "Rev.", "Sgt.", "Sister"]
+    @test_option = find(:css, '#crm_contact_individual_salutation_id').all(:css, 'option').sample
+    @spouse_option = find(:css, '#crm_contact_individual_add_spouse_salutation_id').all(:css, 'option').sample
+    get_individual_salutation(gender)
+    get_individual_fname(gender)
     is_valid_family?
-    is_valid_spouse?
+    get_spouse_salutation(gender)
+    get_individual_fname(gender)
     is_valid_address?
     is_valid_phone?
     is_valid_email?
-    click_button 'Save & New'
+    click_button 'Save Contact'
     sleep 10
   end
 end
@@ -26,22 +33,77 @@ def is_logged_in?
    visit 'https://dev.otw.redtailtechnology.com/contacts/individuals/new'
 end
 
-def is_valid_individual?
-   @test_option = find(:css, '#crm_contact_individual_salutation_id').all(:css, 'option').sample
-   if @test_option.text == ""
-      is_valid_individual?
-   else
-      @test_option.select_option
-      @individual_text = @test_option.text
-      fill_in 'crm_contact_individual[first_name]', with: Faker::Name.first_name
-      fill_in 'crm_contact_individual[middle_name]', with: Faker::Name.middle_name
-      fill_in 'crm_contact_individual[last_name]', with: Faker::Name.last_name
-      find(:css, '#crm_contact_individual_suffix').all(:css, 'option').sample.select_option
-      fill_in 'crm_contact_individual[nickname]', with: Faker::Name.initials
-      fill_in 'crm_contact_individual[designation]', with: Faker::Job.position
-      fill_in 'crm_contact_individual[job_title]', with: Faker::Job.title
-      fill_in 'crm_contact_individual[business_attributes][company_name]', with: Faker::Company.name
+
+def get_individual_salutation(gender)
+   if gender == "male"
+      @gents.each do |g|
+         if g == @test_option.text
+            @test_option.select_option
+         else
+            @test_option
+         end
+      end
+   elsif gender == "female"
+      @ladies.each do |l|
+         if l == @test_option.text
+            @test_option.select_option
+         else
+            @test_option
+         end
+      end
    end
+end
+
+def get_spouse_salutation(gender)
+   if gender == "male"
+      @ladies.each do |l|
+         if l == @spouse_option.text
+            @spouse_option.select_option
+         else
+            @spouse_option
+         end
+      end
+   elsif gender == "female"
+      @gents.each do |g|
+         if g == @spouse_option.text
+            @spouse_option.select_option
+         else
+            @spouse_option
+         end
+      end
+   end
+end
+
+
+def get_individual_fname(gender)
+   if gender == "male"
+      fill_in 'crm_contact_individual[first_name]', with: Faker::Name.male_first_name
+      is_valid_individual?
+   elsif gender == "female"
+      fill_in 'crm_contact_individual[first_name]', with: Faker::Name.female_first_name
+      is_valid_individual?
+   end
+end
+
+def get_spouse_fname(gender)
+   if gender == "male"
+      fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Name.female_first_name
+      is_valid_spouse?
+   elsif gender == "female"
+      fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Name.male_first_name
+      is_valid_spouse?
+   end
+end
+
+
+def is_valid_individual?
+   fill_in 'crm_contact_individual[middle_name]', with: Faker::Name.middle_name
+   fill_in 'crm_contact_individual[last_name]', with: Faker::Name.last_name
+   find(:css, '#crm_contact_individual_suffix').all(:css, 'option').sample.select_option
+   fill_in 'crm_contact_individual[nickname]', with: Faker::Name.initials
+   fill_in 'crm_contact_individual[designation]', with: Faker::Job.position
+   fill_in 'crm_contact_individual[job_title]', with: Faker::Job.title
+   fill_in 'crm_contact_individual[business_attributes][company_name]', with: Faker::Company.name
 end
 
 def is_valid_family?
@@ -49,21 +111,8 @@ def is_valid_family?
 end
 
 def is_valid_spouse?
-   @spouse_option = find(:css, '#crm_contact_individual_add_spouse_salutation_id').all(:css, 'option').sample
-   @spouse_text = @spouse_option.text
-   if @individual_text == "Father" && @spouse_text == "Sister"
-      is_valid_spouse?
-   else
-      @spouse_option.select_option
-   end
-
-   sleep 5
-   fill_in 'crm_contact_individual[add_spouse][first_name]', with: Faker::Name.first_name
-   sleep 5
    fill_in 'crm_contact_individual[add_spouse][middle_name]', with: Faker::Name.middle_name
-   sleep 5
    fill_in 'crm_contact_individual[add_spouse][last_name]', with: Faker::Name.last_name
-   sleep 5
    find(:css, '#crm_contact_individual_add_spouse_suffix').all(:css, 'option').sample.select_option
    fill_in 'crm_contact_individual[add_spouse][nickname]', with: Faker::Name.initials
    fill_in 'crm_contact_individual[add_spouse][designation]', with: Faker::Job.position
@@ -101,9 +150,10 @@ end
 
 def is_valid_email?
    @email_option = find(:css, '#crm_contact_individual_emails_attributes_0_email_type').all(:css, 'option').sample
-   if @phone_option.text == ""
+   if @email_option.text == ""
+      is_valid_email?
    else
-      @phone_option.select_option
+      @email_option.select_option
       fill_in 'crm_contact_individual[emails_attributes][0][address]', with: Faker::Internet.email
    end
 end
